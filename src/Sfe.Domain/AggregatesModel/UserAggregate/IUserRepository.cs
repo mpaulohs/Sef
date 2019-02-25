@@ -9,5 +9,7 @@ namespace Sfe.Domain.AggregatesModel.UserAggregate
     public interface IUserRepository
     {
         Task<(IdentityResult result, User user)> CreateAsync(string name, string email);
+        Task<User> GetByIdAsync(string id);
+        Task<IEnumerable<User>> ListAllAsync();
     }
 }

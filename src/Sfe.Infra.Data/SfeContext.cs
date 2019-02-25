@@ -56,39 +56,31 @@ namespace Sfe.Infra.Data
                     .WithOne(e => e.Role)
                     .HasForeignKey(rc => rc.RoleId)
                     .IsRequired();
-            });
+            });           
 
-            modelBuilder.Entity<IdentityUser>(b =>
-            {
-                b.ToTable("Core_Users");
-            });
-
-            modelBuilder.Entity<IdentityUserClaim<string>>(b =>
+            modelBuilder.Entity<UserClaim>(b =>
             {
                 b.ToTable("Core_UserClaims");
             });
 
-            modelBuilder.Entity<IdentityUserLogin<string>>(b =>
+            modelBuilder.Entity<UserLogin>(b =>
             {
                 b.ToTable("Core_UserLogins");
             });
 
-            modelBuilder.Entity<IdentityUserToken<string>>(b =>
+            modelBuilder.Entity<UserToken>(b =>
             {
                 b.ToTable("Core_UserTokens");
             });
 
-            modelBuilder.Entity<IdentityRole>(b =>
-            {
-                b.ToTable("Core_Roles");
-            });
+           
 
-            modelBuilder.Entity<IdentityRoleClaim<string>>(b =>
+            modelBuilder.Entity<RoleClaim>(b =>
             {
                 b.ToTable("Core_RoleClaims");
             });
 
-            modelBuilder.Entity<IdentityUserRole<string>>(b =>
+            modelBuilder.Entity<UserRole>(b =>
             {
                 b.ToTable("Core_UserRoles");
             });
