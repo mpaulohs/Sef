@@ -14,8 +14,4 @@
     <ProjectReference Include="..\sfe.Infra.Data\Sfe.Infra.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

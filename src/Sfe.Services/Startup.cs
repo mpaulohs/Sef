@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Sfe.Application.Behaviors;
 using Sfe.Domain.AggregatesModel.UserAggregate;
 using Sfe.Infra.CrossCutting.IoC;
 using Sfe.Infra.Data;
@@ -36,8 +38,9 @@ namespace Sfe.Services
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<SfeContext>();
 
-            services.AddMediatR();
+           // services.AddMediatR();
             RegisterServices(services);
+            AddMediatr(services);
 
             services.AddSwaggerGen(c =>
             {
@@ -62,6 +65,21 @@ namespace Sfe.Services
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+        }
+
+        private static void AddMediatr(IServiceCollection services)
+        {
+            const string applicationAssemblyName = "Sfe.Application";
+            var assembly = AppDomain.CurrentDomain.Load(applicationAssemblyName);
+
+            AssemblyScanner
+                .FindValidatorsInAssembly(assembly)
+                .ForEach(result => services.AddScoped(result.InterfaceType, result.ValidatorType));
+
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(FailFastRequestBehavior<,>));
+
+            services.AddMediatR();
+
         }
 
         private static void RegisterServices(IServiceCollection services)

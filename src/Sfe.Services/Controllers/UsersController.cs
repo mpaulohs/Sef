@@ -47,7 +47,8 @@ namespace Sfe.Services.Controllers
             {
                 return BadRequest();
             }
-            var result = await _mediator.Send(user);                              
+            var result = await _mediator.Send(new CreateUserCommand(user.Name, user.Email));
+            
             return CreatedAtAction("GetUser", new { id = result.Result }, user);
         }
 

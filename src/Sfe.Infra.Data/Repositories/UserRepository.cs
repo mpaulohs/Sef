@@ -20,7 +20,8 @@ namespace Sfe.Infra.Data.Repositories
         public async Task<(IdentityResult result, User user)>  CreateAsync(string name, string email)
         {
             var _user = new User { UserName = email, Email = email, Name=name };
-            var result = await _userManager.CreateAsync(_user, "florida#09");
+            var result = await _userManager.CreateAsync(_user, "Florida#09");
+            
             return (result, _user);
          }
 
@@ -32,7 +33,8 @@ namespace Sfe.Infra.Data.Repositories
 
         public async Task<IEnumerable<User>> ListAllAsync()
         {
-            return await _context.Users.ToListAsync();
+           var uuu =  _userManager.Users;
+            return await _context.Users.Include(l => l.UserRoles).ToListAsync();
         }
     }
 }
