@@ -1,0 +1,86 @@
+﻿<aside class="main-sidebar">
+    <section class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="header">Navegação Principal</li>
+            <li><a asp-action="AdminHome" asp-controller="AdminHome"><i class="fa fa-home"></i> <span>Página principal</span></a></li>
+            <li class="treeview active">
+                <a href="#">
+                    <i class="fa fa-calendar"></i> <span>Evento</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu menu-open" style="display: block;">
+                    <li>
+                        <a asp-action="ListaClientes" asp-controller="AdminClientes">
+                            <i class="fa fa-group"></i> Clientes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-controller="AdminProdutosServicos" asp-action="Index">
+                            <i class="fa fa-barcode"></i> Produtos/Serviços
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-controller="AdminEventos" asp-action="Index">
+                            <i class="fa fa-calendar"></i> Eventos
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="AdminEventoTipos" asp-action="Index">
+                            <i class="fa fa-calendar"></i> Tipos de Evento
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="AdminTemasFesta" asp-action="Index">
+                            <i class="fa fa-calendar"></i> Temas do Evento
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-controller="AdminOrcamento" asp-action="ListOrcamento">
+                            <i class="fa fa-tags"></i> Orçamentos
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            @*<li class="treeview active">
+                <a href="#">
+                    <i class="fa fa-share"></i> <span>Funcionário</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu menu-open" style="display: block;">
+                    <li><a asp-action="Index" asp-controller="AdminFuncionarios"><i class="fa fa-users"></i>Funcionários</a></li>
+                    <li><a asp-action="Index" asp-controller="AdminFuncoes"><i class="fa fa-files-o    "></i>Funções</a></li>
+                </ul>
+
+            </li>*@
+
+            <li class="treeview active">
+                <a href="#">
+                    <i class="fa fa-usd"></i> <span>Financeiro</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu menu-open" style="display: block;">
+                    <li><a asp-action="ListLancamentos" asp-controller="AdminLancamentos"><i class="fa fa-share-square-o"></i>Lançamentos</a></li>                    
+                </ul>
+            </li>
+
+            <li class="treeview active">
+                <a href="#">
+                    <i class="fa fa-user-o"></i> <span>Gperfil</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu menu-open" style="display: block;">
+                    <li><a asp-action="ListarUsuarios" asp-controller="GperfilUsuarios"><i class="fa fa-users"></i>Usuários</a></li>
+                    <li><a asp-action="ListarPapeis" asp-controller="GperfilPapeis"><i class="fa fa-files-o    "></i>Papéis</a></li>
+                    @*<li><a asp-action="ListarPermissoes" asp-controller="GperfilPermissoes"><i class="fa fa-unlock"></i>Permissões</a></li>*@
+                </ul>
+
+            </li>
+
+        </ul>
+    </section>
+</aside>
+
+

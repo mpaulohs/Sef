@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sfe.Application.Commands;
+using Sfe.Application.Extensions;
 using Sfe.Domain.AggregatesModel.UserAggregate;
 
 namespace Sfe.Services.Controllers
@@ -22,7 +24,8 @@ namespace Sfe.Services.Controllers
         [HttpGet]
         public async Task<IEnumerable<User>> Get()
         {
-            return await _userRepository.ListAllAsync();
+            var usuario = await _userRepository.ListAllAsync();            
+            return await _userRepository.ListAllAsync();          
         }
 
         // GET api/values/5
