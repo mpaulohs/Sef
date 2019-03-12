@@ -8,30 +8,31 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sfe.Application.ViewModels.ControllersGperfil;
+using Sfe.Domain.AggregatesModel.MessageSenderAggregate;
 using Sfe.Domain.AggregatesModel.UserAggregate;
 using Sfe.UI.Web.Controllers;
 
 namespace Sfe.UI.Web._2_ControllersGperfil
 {
-        [Authorize]
-        public class GperfilAccountController : Controller
-        {
-            private readonly UserManager<User> _userManager;
-            private readonly SignInManager<User> _signInManager;
-            // private readonly IEmailSender _emailSender;
-            private readonly ILogger _logger;
+    [Authorize]
+    public class GperfilAccountController : Controller
+    {
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ILogger _logger;
+        private readonly IEmailSenderRepository _emailSender;
 
-            public GperfilAccountController(
-                UserManager<User> userManager,
-                SignInManager<User> signInManager,
-                //  IEmailSender emailSender,
-                ILoggerFactory loggerFactory)
-            {
-                _userManager = userManager;
-                _signInManager = signInManager;
-                // _emailSender = emailSender;
-                _logger = loggerFactory.CreateLogger<GperfilAccountController>();
-            }
+        public GperfilAccountController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IEmailSenderRepository emailSender,
+            ILoggerFactory loggerFactory)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+             _emailSender = emailSender;
+            _logger = loggerFactory.CreateLogger<GperfilAccountController>();
+        }
 
             //
             // GET: /Account/Login
@@ -91,9 +92,89 @@ namespace Sfe.UI.Web._2_ControllersGperfil
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
-            #region Helpers
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        //
+        // POST: /Account/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return View("ForgotPasswordConfirmation");
+                }
 
-            private void AddErrors(IdentityResult result)
+                //For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
+                //Send an email with this link
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(nameof(ResetPassword), "GperfilAccount", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+                   $"Por favor, redefinar sua senha clicando aqui:: <a href='{callbackUrl}'>link</a>");
+                return View("ForgotPasswordConfirmation");
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+
+        // GET: /Account/ResetPassword
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string code = null)
+        {
+            return code == null ? View("Error") : View();
+        }
+
+        //
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return RedirectToAction(nameof(GperfilAccountController.ResetPasswordConfirmation), "GperfilAccount");
+            }
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(GperfilAccountController.ResetPasswordConfirmation), "GperfilAccount");
+            }
+            AddErrors(result);
+            return View();
+        }
+
+
+        //
+        // GET: /Account/ResetPasswordConfirmation
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        #region Helpers
+
+        private void AddErrors(IdentityResult result)
             {
                 foreach (var error in result.Errors)
                 {
