@@ -108,7 +108,7 @@ namespace Sfe.UI.Web
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Events API V1");
             });
-
+            app.UseMvcWithDefaultRoute();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

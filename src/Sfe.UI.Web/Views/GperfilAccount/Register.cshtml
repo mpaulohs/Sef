@@ -40,9 +40,9 @@
         <!-- /.login-logo -->
         <div class="login-box-body">
             <p class="login-box-msg">Criar um nova conta</p>
-            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+            <form asp-controller="GperfilAccount" asp-action="Register"  method="post" role="form">
                 <div class="form-group has-feedback">
-                    <input type="text" class="form-control" placeholder="Nome Completo">
+                    <input asp-for="Name" class="form-control" placeholder="Nome Completo">
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
@@ -84,7 +84,7 @@
                     Google+
                 </a>
             </div>
-            <a href="login.html" class="text-center">Eu já tenho uma conta</a>
+            <a asp-action="Login" asp-controller="GperfilAccount" class="text-center">Eu já tenho uma conta</a>
         </div>
         <!-- /.login-box-body -->
     </div>

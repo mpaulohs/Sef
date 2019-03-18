@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -41,6 +38,7 @@ namespace Sfe.UI.Web._2_ControllersGperfil
             [Route("login")]
             public async Task<IActionResult> Login(string returnUrl = null)
             {
+                       
                 // Clear the existing external cookie to ensure a clean login process
                 // await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
                 await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -97,24 +95,27 @@ namespace Sfe.UI.Web._2_ControllersGperfil
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {         
+
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email, Name = model.Name  };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action("ConfirmEmail", "GperfilAccount", new { userId = user.Id, code = token }, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
+                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+                    //var code_ = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code_ }, protocol: HttpContext.Request.Scheme);
+                    //var body = ReturnBody(model.Email, model.Password, callbackUrl);
+                    //await _emailSender.SendEmailAsync(model.Email, "Confirme sua conta. [Gazeta do Tocantins])", body);
+                    //_logger.LogInformation(3, "User created a new account with password.");
+                    // return RedirectToLocal(returnUrl);
+                    return View("DisplayEmail");
                 }
                 AddErrors(result);
             }
@@ -123,6 +124,37 @@ namespace Sfe.UI.Web._2_ControllersGperfil
             return View(model);
         }
 
+
+        // GET: /Account/ConfirmEmail
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded)
+            {
+                ViewBag.Email = user.Email;
+                return View("ConfirmEmail");
+            }
+            return View("Error");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult DisplayEmail()
+        {
+            return View();
+        }
 
         [HttpPost]
             [ValidateAntiForgeryToken]
@@ -215,6 +247,16 @@ namespace Sfe.UI.Web._2_ControllersGperfil
 
         #region Helpers
 
+        private string ReturnBody(string login, string senha, string callbackUrl)
+        {
+            string body = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
+            body += "<HTML><HEAD><META http-equiv=Content-Type content=\"text/html; charset=iso-8859-1\">";
+            body += "</HEAD><BODY><DIV>Por favor confirme sua conta clicando neste link: <A href=\"" + callbackUrl + "\">link";
+            body += "</A></DIV><BR/>Login: " + login + " <BR/>Senha: " + senha + "</BODY></HTML>";
+
+            return body;
+
+        }
         private void AddErrors(IdentityResult result)
             {
                 foreach (var error in result.Errors)

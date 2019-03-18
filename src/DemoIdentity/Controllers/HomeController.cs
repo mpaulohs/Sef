@@ -12,6 +12,9 @@ namespace DemoIdentity.Controllers
     {
         public IActionResult Index()
         {
+            string callbackUrl = Url.Action("Index", "Home", new { id = 17, code= 92929 });
+
+            ViewBag.Url = callbackUrl;
             return View();
         }
 
