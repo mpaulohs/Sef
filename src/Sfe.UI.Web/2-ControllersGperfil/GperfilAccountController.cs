@@ -57,9 +57,10 @@ namespace Sfe.UI.Web._2_ControllersGperfil
                 ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
                 {
-                    // This doesn't count login failures towards account lockout
-                    // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                     if (result.Succeeded)
                     {
                         _logger.LogInformation(1, "User logged in.");                       
@@ -95,8 +96,8 @@ namespace Sfe.UI.Web._2_ControllersGperfil
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {         
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {        
 
             if (ModelState.IsValid)
             {
@@ -104,18 +105,14 @@ namespace Sfe.UI.Web._2_ControllersGperfil
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "GperfilAccount", new { userId = user.Id, code = token }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    var code_ = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action("ConfirmEmail", "GperfilAccount", new { userId = user.Id, code = code_ }, protocol: HttpContext.Request.Scheme);
+                    var body = ReturnBody(model.Email, model.Password, callbackUrl);
+                    await _emailSender.SendEmailAsync(model.Email, "Confirme sua conta. [Gazeta do Tocantins])", body);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation(3, "User created a new account with password.");
 
-                    //var code_ = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code_ }, protocol: HttpContext.Request.Scheme);
-                    //var body = ReturnBody(model.Email, model.Password, callbackUrl);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirme sua conta. [Gazeta do Tocantins])", body);
-                    //_logger.LogInformation(3, "User created a new account with password.");
-                    // return RedirectToLocal(returnUrl);
-                    return View("DisplayEmail");
+                    return View("DisplayEmail");                   
                 }
                 AddErrors(result);
             }

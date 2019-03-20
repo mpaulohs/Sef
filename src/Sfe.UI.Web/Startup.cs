@@ -42,13 +42,11 @@ namespace Sfe.UI.Web
 
             services.AddDbContext<SfeContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Sfe.UI.Web")));
+                    Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Sfe.UI.Web")));          
 
-            //services.AddDefaultIdentity<User>()
-            //    .AddEntityFrameworkStores<SfeContext>();
-
-
-            services.AddIdentityCore<User>()
+            services.AddIdentityCore<User>(config => {
+                config.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<SfeContext>()
                 .AddSignInManager()
@@ -63,15 +61,22 @@ namespace Sfe.UI.Web
                 
             });
 
-
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password settings.
+                options.Password.RequireDigit = false; // true; // Requires a number between 0-9 in the password.
+                options.Password.RequireLowercase = false; // true; Requires a lowercase character in the password.
+                options.Password.RequireNonAlphanumeric = false; // true; Requires a non - alphanumeric character in the password.
+                options.Password.RequireUppercase = false; // true; Requires an uppercase character in the password.
+                options.Password.RequiredLength = 6; //6; The minimum length of the password.
+                options.Password.RequiredUniqueChars = 1;  // Requires the number of distinct characters in the password.
+            });
 
             services.ConfigureApplicationCookie(options =>
-            {
-               
+            {            
 
                 options.LoginPath = "/login";
-                options.AccessDeniedPath = "/login";
-               
+                options.AccessDeniedPath = "/login";               
             });
 
             RegisterServices(services);
