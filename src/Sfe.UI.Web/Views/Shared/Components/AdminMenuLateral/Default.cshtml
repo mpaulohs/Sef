@@ -3,12 +3,12 @@
         <ul class="sidebar-menu">
             <li class="header">Navegação Principal</li>
             <li><a asp-action="AdminHome" asp-controller="AdminHome"><i class="fa fa-home"></i> <span>Página principal</span></a></li>
-            <li class="treeview active">
+            <li class="treeview">
                 <a href="#">
                     <i class="fa fa-calendar"></i> <span>Evento</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
-                <ul class="treeview-menu menu-open" style="display: block;">
+                <ul class="treeview-menu menu-open">
                     <li>
                         <a asp-action="ListaClientes" asp-controller="AdminClientes">
                             <i class="fa fa-group"></i> Clientes
@@ -43,20 +43,8 @@
                         </a>
                     </li>
                 </ul>
-            </li>
-            @*<li class="treeview active">
-                <a href="#">
-                    <i class="fa fa-share"></i> <span>Funcionário</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu menu-open" style="display: block;">
-                    <li><a asp-action="Index" asp-controller="AdminFuncionarios"><i class="fa fa-users"></i>Funcionários</a></li>
-                    <li><a asp-action="Index" asp-controller="AdminFuncoes"><i class="fa fa-files-o    "></i>Funções</a></li>
-                </ul>
-
-            </li>*@
-
-            <li class="treeview active">
+            </li>           
+            <li class="treeview">
                 <a href="#">
                     <i class="fa fa-usd"></i> <span>Financeiro</span>
                     <i class="fa fa-angle-left pull-right"></i>
@@ -66,13 +54,13 @@
                 </ul>
             </li>
 
-            <li class="treeview active">
+            <li class="treeview">
                 <a href="#">
                     <i class="fa fa-user-o"></i> <span>Gperfil</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu menu-open" style="display: block;">
-                    <li><a asp-action="ListarUsuarios" asp-controller="GperfilUsuarios"><i class="fa fa-users"></i>Usuários</a></li>
+                    <li class="@(Html.IsMenuActive("/usuarios") ? "active" : "")"><a asp-action="Users" asp-controller="GperfilAccount"><i class="fa fa-users"></i>Usuários</a></li>
                     <li><a asp-action="ListarPapeis" asp-controller="GperfilPapeis"><i class="fa fa-files-o    "></i>Papéis</a></li>
                     @*<li><a asp-action="ListarPermissoes" asp-controller="GperfilPermissoes"><i class="fa fa-unlock"></i>Permissões</a></li>*@
                 </ul>

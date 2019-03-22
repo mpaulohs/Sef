@@ -31,56 +31,64 @@ namespace Sfe.UI.Web._2_ControllersGperfil
             _logger = loggerFactory.CreateLogger<GperfilAccountController>();
         }
 
+
+        [HttpGet]
+        [Route("usuarios")]
+        public IActionResult Users()
+        {
+            ViewBag.pathBase = HttpContext.Request.Host;
+            return View();
+        }
             //
-            // GET: /Account/Login
-            [HttpGet]
-            [AllowAnonymous]
-            [Route("login")]
-            public async Task<IActionResult> Login(string returnUrl = null)
-            {
+        // GET: /Account/Login
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("login")]
+        public async Task<IActionResult> Login(string returnUrl = null)
+        {
                        
-                // Clear the existing external cookie to ensure a clean login process
-                // await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
-                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-                ViewData["ReturnUrl"] = returnUrl;
-                return View();
-            }
+            // Clear the existing external cookie to ensure a clean login process
+            // await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
-            //
-            // POST: /Account/Login
-            [HttpPost]
-            [AllowAnonymous]
-            [ValidateAntiForgeryToken]
-            [Route("login")]
-            public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        //
+        // POST: /Account/Login
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        [Route("login")]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
             {
-                ViewData["ReturnUrl"] = returnUrl;
-                if (ModelState.IsValid)
-                {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
-                    if (result.Succeeded)
-                    {
-                        _logger.LogInformation(1, "User logged in.");                       
-                        return RedirectToLocal(returnUrl);
-                    }
-                    if (result.IsLockedOut)
-                    {
-                        _logger.LogWarning(2, "User account locked out.");
-                        return View("Lockout");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                        return View(model);
-                    }
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation(1, "User logged in.");                       
+                    return RedirectToLocal(returnUrl);
                 }
-
-                // If we got this far, something failed, redisplay form
-                return View(model);
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning(2, "User account locked out.");
+                    return View("Lockout");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
             }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
 
         // GET: /Account/Register
         [HttpGet]
