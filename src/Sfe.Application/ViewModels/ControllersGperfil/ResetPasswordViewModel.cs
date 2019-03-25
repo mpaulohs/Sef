@@ -7,12 +7,11 @@ namespace Sfe.Application.ViewModels.ControllersGperfil
 {
     public class ResetPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
+        
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at most {1} characters long.", MinimumLength = 10)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -22,5 +21,6 @@ namespace Sfe.Application.ViewModels.ControllersGperfil
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
+        public string userId { get; set; }
     }
 }

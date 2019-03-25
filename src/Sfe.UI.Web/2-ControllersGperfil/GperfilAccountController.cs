@@ -209,9 +209,15 @@ namespace Sfe.UI.Web._2_ControllersGperfil
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        public async Task<IActionResult> ResetPassword(string code = null, string userId = null)
         {
-            return code == null ? View("Error") : View();
+            if(code == null || userId == null)
+            {
+                return View("Error");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            ViewBag.EmailUser = user.Email;
+            return View();
         }
 
         //
@@ -225,7 +231,7 @@ namespace Sfe.UI.Web._2_ControllersGperfil
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByIdAsync(model.userId);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -236,6 +242,7 @@ namespace Sfe.UI.Web._2_ControllersGperfil
             {
                 return RedirectToAction(nameof(GperfilAccountController.ResetPasswordConfirmation), "GperfilAccount");
             }
+            ViewBag.EmailUser = user.Email;
             AddErrors(result);
             return View();
         }
