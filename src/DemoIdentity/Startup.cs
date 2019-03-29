@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using DemoIdentity.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace DemoIdentity
 {
@@ -42,6 +43,7 @@ namespace DemoIdentity
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddOData();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -66,6 +68,11 @@ namespace DemoIdentity
 
             app.UseAuthentication();
 
+            app.UseMvc(routes =>
+            {
+                routes.EnableDependencyInjection();
+                routes.Expand().Select().Count().OrderBy().Filter();
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
